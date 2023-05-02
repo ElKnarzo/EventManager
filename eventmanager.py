@@ -25,7 +25,7 @@ import re
 from string import Template
 
 from bs4 import BeautifulSoup
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urljoin, urlparse, quote
 
 # EventManager modules
 from simpletelegramapi import SimpleTelegramApi
@@ -117,7 +117,7 @@ class PoGoEvent():
             return None
 
     def check_event_start(self, timewindow_start, timewindow_end):
-        return true
+        return True
         #handle unknown start
         if self.start is None:
             return False
@@ -354,20 +354,21 @@ class EventManager():
         
         
         url = 'https://leekduck.com'
-        event_url = urljoin(urljoin(url, "/events/"), event.name.replace(" ", "-"))
+        event_url = urljoin(urljoin(url, "/events/"), event.name.replace(" ", "-").lower())
         response = requests.get(event_url)
         html = response.content
+    
         
-        soup = BeautifulSoup(html, 'html.parser')
-        
+        soup = BeautifulSoup(html, 'html.parser')    
         search_string = 'Graphic'
         
         files = []
+        images = soup.find_all('img')
         for image in images:
             # Wenn der gewünschte String in der "alt"-Eigenschaft vorhanden ist, das Bild herunterladen
             if search_string in image.get('alt', ''):
                 # Bild-URL erhalten
-                image_url = urljoin(url, image['src'])
+                image_url = urljoin(url, quote(image['src']))
                 # Das Bild herunterladen
                 filename = self._download_image(image_url, folder_name)
                 files.append(folder_name + "/" + filename)
@@ -375,7 +376,7 @@ class EventManager():
         info_msg = "„Ein intuitiver Held“\\-Event* Zeitraum: 02\\.05\\. 10 Uhr \\- 08\\.05\\. 20 Uhr"
         result = self._api.send_media_group(523657502, info_msg, "MarkdownV2", files)
     
-    def _download_image(image_url, output_folder):
+    def _download_image(self, image_url, output_folder):
         # Bild-URL abrufen und Bytes laden
         response = requests.get(image_url)
         # Dateiname aus der URL extrahieren
@@ -458,11 +459,11 @@ class EventManager():
                         log.info(f'EventManager: event start detected for event {event.name} ({event.etype}) -> reset quests')
                         # remove all quests from MAD DB
                         #self._scannerconnector.reset_all_quests()
-                        #is_request_timewindow = self._is_inside_request_timewindow()
+                        is_request_timewindow = self._is_inside_request_timewindow()
                         #if is_request_timewindow:
                         #    self._scannerconnector.trigger_rescan()
-                        self._send_tg_info_questreset(event.name, "start", is_request_timewindow)
-                        self._send_dc_info_questreset(event.name, "start",)
+                        #self._send_tg_info_questreset(event.name, "start", is_request_timewindow)
+                        #self._send_dc_info_questreset(event.name, "start",)
                         
                         self._send_tg_event_info(event)
                         break

@@ -6,3 +6,4 @@
 #
 requests
 mysql-connector
+beautifulsoup4

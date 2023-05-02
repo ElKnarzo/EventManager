@@ -52,10 +52,10 @@ class SimpleTelegramApi:
         for file in files:
             media_item = {
                 "type": "photo",
-                "media": "attach://file" + i
+                "media": "attach://file" + str(i)
             }
             
-            if i = 0:
+            if i == 0:
                 media_item["caption"] = text
                 media_item["parse_mode"] = parse_mode
                 
@@ -67,11 +67,14 @@ class SimpleTelegramApi:
             body["media"] = json.dumps(media)
             
         
+        log.info(f{body})
+        
         i = 0
         for file in files:
-            body["file" + i] = file
+            log.info(f"{file}")
+            body["file" + str(i)] = open(file, 'rb')
         
-        request_url = self._base_url + command
+        request_url = self._base_url + "sendMediaGroup"
         response = requests.post(request_url, body)
         return response
         
