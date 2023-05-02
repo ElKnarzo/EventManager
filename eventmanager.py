@@ -24,6 +24,7 @@ from logging.handlers import RotatingFileHandler
 import re
 from string import Template
 
+import shutil
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin, urlparse, quote
 from slugify import slugify
@@ -347,24 +348,47 @@ class EventManager():
                 else:
                     log.error(f"send Telegram info message failed with result:{result}")
     
-    def _send_tg_event_info(self, event):
-        folder_name = 'tmp'
-        if not os.path.exists(folder_name):
-            os.makedirs(folder_name)
+    def _send_tg_event_info(self, event):        
+        files = self._get_event_info_graphics(event)
+        
+        event_start = event.start.strftime('%d\\.%m\\. %H')
+        event_end = event.end.strftime('%d\\.%m\\. %H')
+        
+        info_msg = Template(self._local['tg_eventinfo_tmpl'][self.__language]).safe_substitute(event_name=event.name, event_start=event_start, event_end=event_end)
+        result = self._api.send_media_group(523657502, info_msg, "MarkdownV2", files)
+        if result["ok"]:
+            log.info(f"send Telegram info message:{info_msg} result:{result}")
+        else:
+            log.error(f"send Telegram info message failed with result:{result}")
+    
+    
+    def _get_event_info_graphics(self, event):
+        folder = 'tmp'
+        if not os.path.exists(folder):
+            os.makedirs(folder)
+            
+        for filename in os.listdir(folder):
+            file_path = os.path.join(folder, filename)
+            try:
+                if os.path.isfile(file_path) or os.path.islink(file_path):
+                    os.unlink(file_path)
+                elif os.path.isdir(file_path):
+                    shutil.rmtree(file_path)
+            except Exception as e:
+                log.error(f"Failed to delete {file_path}. Reason: {e}")
         
         
         url = 'https://leekduck.com'
         event_url = urljoin(urljoin(url, "/events/"), slugify(event.name))
         response = requests.get(event_url)
         html = response.content
-    
+        
         
         soup = BeautifulSoup(html, 'html.parser')    
         search_string = 'Graphic'
         
         files = []
-        images = soup.find_all('img')
-        for image in images:
+        for image in soup.find_all('img'):
             # Wenn der gewünschte String in der "alt"-Eigenschaft vorhanden ist, das Bild herunterladen
             if search_string in image.get('alt', ''):
                 # Bild-URL erhalten
@@ -373,12 +397,8 @@ class EventManager():
                 # Das Bild herunterladen
                 filename = self._download_image(image_url, folder_name)
                 files.append(folder_name + "/" + filename)
-        
-        event_start = event.start.strftime('%d\\.%m\\. %H')
-        event_end = event.end.strftime('%d\\.%m\\. %H')
-        
-        info_msg = Template(self._local['tg_eventinfo_tmpl'][self.__language]).safe_substitute(event_name=event.name, event_start=event_start, event_end=event_end)
-        result = self._api.send_media_group(523657502, info_msg, "MarkdownV2", files)
+                
+        return files
     
     def _download_image(self, image_url, output_folder):
         # Bild-URL abrufen und Bytes laden
