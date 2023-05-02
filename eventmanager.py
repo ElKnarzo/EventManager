@@ -363,12 +363,12 @@ class EventManager():
     
     
     def _get_event_info_graphics(self, event):
-        folder = 'tmp'
-        if not os.path.exists(folder):
-            os.makedirs(folder)
+        tmp_folder = 'tmp'
+        if not os.path.exists(tmp_folder):
+            os.makedirs(tmp_folder)
             
-        for filename in os.listdir(folder):
-            file_path = os.path.join(folder, filename)
+        for filename in os.listdir(tmp_folder):
+            file_path = os.path.join(tmp_folder, filename)
             try:
                 if os.path.isfile(file_path) or os.path.islink(file_path):
                     os.unlink(file_path)
@@ -395,8 +395,8 @@ class EventManager():
                 image_src = re.sub("\?.*", "", image['src'])
                 image_url = urljoin(url, quote(image_src))
                 # Das Bild herunterladen
-                filename = self._download_image(image_url, folder_name)
-                files.append(folder_name + "/" + filename)
+                filename = self._download_image(image_url, tmp_folder)
+                files.append(tmp_folder + "/" + filename)
                 
         return files
     

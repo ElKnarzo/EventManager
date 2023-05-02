@@ -76,6 +76,7 @@ class SimpleTelegramApi:
         
         request_url = self._base_url + "sendMediaGroup"
         response = requests.post(request_url, data=body, files=postfiles)
+        response = json.loads(response)
         return response
         
 
