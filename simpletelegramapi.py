@@ -67,8 +67,6 @@ class SimpleTelegramApi:
         if len(media) > 0:
             body["media"] = json.dumps(media)
         
-        log.info(f"{body}")
-        
         i = 0
         postfiles = {}
         for file in files:

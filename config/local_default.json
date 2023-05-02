@@ -20,8 +20,8 @@
         "en": "Starting rescanning for new quests"
     },
     "tg_eventinfo_tmpl":{
-        "de": "*\\\"${event_name}\\\"\\-Event* Zeitraum: ${event_start} Uhr \\- ${event_end} Uhr",
-        "en": "Info: Quests deleted caused by ${event_trigger} of event ${event_name}. ${rescan_str}."
+        "de": "*\\\"${event_name}\\\"\\-Event*\\\r\\\nZeitraum: ${event_start} Uhr \\- ${event_end} Uhr",
+        "en": ""
     },
     "dc_questreset_tmpl":{
         "de": "Pokestop-Quests gelöscht aufgrund ${event_trigger} von Event ${event_name}.",

@@ -373,11 +373,9 @@ class EventManager():
                 # Das Bild herunterladen
                 filename = self._download_image(image_url, folder_name)
                 files.append(folder_name + "/" + filename)
-                
-        info_msg = "test"
         
-        event_start = event.start.strftime('%d.%m. %H')
-        event_end = event.end.strftime('%d.%m. %H')
+        event_start = event.start.strftime('%d\\.%m\\. %H')
+        event_end = event.end.strftime('%d\\.%m\\. %H')
         
         info_msg = Template(self._local['tg_eventinfo_tmpl'][self.__language]).safe_substitute(event_name=event.name, event_start=event_start, event_end=event_end)
         result = self._api.send_media_group(523657502, info_msg, "MarkdownV2", files)
@@ -392,8 +390,7 @@ class EventManager():
         # Bild in die Datei speichern
         with open(filepath, 'wb') as f:
             f.write(response.content)
-        
-        log.info(f"Das Bild {filename} wurde heruntergeladen und im Ordner {output_folder} gespeichert.")
+    
         return filename
 
     
@@ -464,12 +461,12 @@ class EventManager():
                     if event.check_event_start(self._last_quest_reset_check, now):
                         log.info(f'EventManager: event start detected for event {event.name} ({event.etype}) -> reset quests')
                         # remove all quests from MAD DB
-                        #self._scannerconnector.reset_all_quests()
+                        self._scannerconnector.reset_all_quests()
                         is_request_timewindow = self._is_inside_request_timewindow()
-                        #if is_request_timewindow:
-                        #    self._scannerconnector.trigger_rescan()
-                        #self._send_tg_info_questreset(event.name, "start", is_request_timewindow)
-                        #self._send_dc_info_questreset(event.name, "start",)
+                        if is_request_timewindow:
+                            self._scannerconnector.trigger_rescan()
+                        self._send_tg_info_questreset(event.name, "start", is_request_timewindow)
+                        self._send_dc_info_questreset(event.name, "start",)
                         
                         self._send_tg_event_info(event)
                         break
