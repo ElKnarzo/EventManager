@@ -14,4 +14,4 @@ test/*.ini
 *.log
 *.log.*
 
-temp/*
+tmp/*

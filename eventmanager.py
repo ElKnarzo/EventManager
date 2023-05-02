@@ -368,12 +368,15 @@ class EventManager():
             # Wenn der gewünschte String in der "alt"-Eigenschaft vorhanden ist, das Bild herunterladen
             if search_string in image.get('alt', ''):
                 # Bild-URL erhalten
-                image_url = urljoin(url, quote(image['src']))
+                image_src = re.sub("\?.*", "", image['src'])
+                image_url = urljoin(url, quote(image_src))
                 # Das Bild herunterladen
                 filename = self._download_image(image_url, folder_name)
                 files.append(folder_name + "/" + filename)
                 
-        info_msg = "„Ein intuitiver Held“\\-Event* Zeitraum: 02\\.05\\. 10 Uhr \\- 08\\.05\\. 20 Uhr"
+        info_msg = "test"
+        
+        info_msg = Template(self._local['tg_eventinfo_tmpl'][self.__language]).safe_substitute(event_name=event.name)
         result = self._api.send_media_group(523657502, info_msg, "MarkdownV2", files)
     
     def _download_image(self, image_url, output_folder):

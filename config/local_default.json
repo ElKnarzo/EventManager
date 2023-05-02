@@ -19,6 +19,10 @@
         "de": "Neuer Questscan gestartet",
         "en": "Starting rescanning for new quests"
     },
+    "tg_eventinfo_tmpl":{
+        "de": "\\\"${event_name}\\\"-Event\\\nZeitraum: 02.05. 10 Uhr - 08.05. 20 Uhr",
+        "en": "Info: Quests deleted caused by ${event_trigger} of event ${event_name}. ${rescan_str}."
+    },
     "dc_questreset_tmpl":{
         "de": "Pokestop-Quests gelöscht aufgrund ${event_trigger} von Event ${event_name}.",
         "en": "Quests deleted caused by ${event_trigger} of event ${event_name}."

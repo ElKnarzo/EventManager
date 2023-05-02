@@ -60,22 +60,25 @@ class SimpleTelegramApi:
                 media_item["parse_mode"] = parse_mode
                 
             media.append(media_item)
+            i = i + 1    
+                
         
-        
-        body = {}
+        body = {"chat_id": chat_id}
         if len(media) > 0:
             body["media"] = json.dumps(media)
             
         
-        log.info(f{body})
+        log.info(f"{body}")
         
         i = 0
+        postfiles = {}
         for file in files:
             log.info(f"{file}")
-            body["file" + str(i)] = open(file, 'rb')
+            postfiles["file" + str(i)] = open(file, 'rb')
+            i = i + 1
         
         request_url = self._base_url + "sendMediaGroup"
-        response = requests.post(request_url, body)
+        response = requests.post(request_url, data=body, files=postfiles)
         return response
         
 
