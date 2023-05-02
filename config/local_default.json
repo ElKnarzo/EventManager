@@ -20,7 +20,7 @@
         "en": "Starting rescanning for new quests"
     },
     "tg_eventinfo_tmpl":{
-        "de": "'${event_name}'-Event",
+        "de": "*\\\"${event_name}\\\"\\-Event* Zeitraum: ${event_start} Uhr \\- ${event_end} Uhr",
         "en": "Info: Quests deleted caused by ${event_trigger} of event ${event_name}. ${rescan_str}."
     },
     "dc_questreset_tmpl":{

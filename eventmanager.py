@@ -376,7 +376,10 @@ class EventManager():
                 
         info_msg = "test"
         
-        info_msg = Template(self._local['tg_eventinfo_tmpl'][self.__language]).safe_substitute(event_name=event.name)
+        event_start = event.start.strftime('%d.%m. %H')
+        event_end = event.end.strftime('%d.%m. %H')
+        
+        info_msg = Template(self._local['tg_eventinfo_tmpl'][self.__language]).safe_substitute(event_name=event.name, event_start=event_start, event_end=event_end)
         result = self._api.send_media_group(523657502, info_msg, "MarkdownV2", files)
     
     def _download_image(self, image_url, output_folder):
