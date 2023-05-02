@@ -56,7 +56,7 @@ class SimpleTelegramApi:
             }
             
             if i == 0:
-                media_item["caption"] = text
+                media_item["caption"] = ":caption"
                 media_item["parse_mode"] = parse_mode
                 
             media.append(media_item)
@@ -66,7 +66,9 @@ class SimpleTelegramApi:
         body = {"chat_id": chat_id}
         if len(media) > 0:
             body["media"] = json.dumps(media)
-            
+        
+        
+        body["media"] = body["media"].replace(":caption", caption)
         
         log.info(f"{body}")
         
