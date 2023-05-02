@@ -26,6 +26,7 @@ from string import Template
 
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin, urlparse, quote
+from slugify import slugify
 
 # EventManager modules
 from simpletelegramapi import SimpleTelegramApi
@@ -353,7 +354,7 @@ class EventManager():
         
         
         url = 'https://leekduck.com'
-        event_url = urljoin(urljoin(url, "/events/"), event.name.replace(" ", "-").lower())
+        event_url = urljoin(urljoin(url, "/events/"), slugify(event.name))
         response = requests.get(event_url)
         html = response.content
     
