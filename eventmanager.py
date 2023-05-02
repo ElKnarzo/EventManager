@@ -24,6 +24,9 @@ from logging.handlers import RotatingFileHandler
 import re
 from string import Template
 
+from bs4 import BeautifulSoup
+from urllib.parse import urljoin, urlparse
+
 # EventManager modules
 from simpletelegramapi import SimpleTelegramApi
 from scannerconnector import MadConnector
@@ -114,6 +117,7 @@ class PoGoEvent():
             return None
 
     def check_event_start(self, timewindow_start, timewindow_end):
+        return true
         #handle unknown start
         if self.start is None:
             return False
@@ -342,7 +346,50 @@ class EventManager():
                     log.info(f"send Telegram info message:{info_msg} result:{result}")
                 else:
                     log.error(f"send Telegram info message failed with result:{result}")
+    
+    def _send_tg_event_info(self, event):
+        folder_name = 'tmp'
+        if not os.path.exists(folder_name):
+            os.makedirs(folder_name)
+        
+        
+        url = 'https://leekduck.com'
+        event_url = urljoin(urljoin(url, "/events/"), event.name.replace(" ", "-"))
+        response = requests.get(event_url)
+        html = response.content
+        
+        soup = BeautifulSoup(html, 'html.parser')
+        
+        search_string = 'Graphic'
+        
+        files = []
+        for image in images:
+            # Wenn der gewünschte String in der "alt"-Eigenschaft vorhanden ist, das Bild herunterladen
+            if search_string in image.get('alt', ''):
+                # Bild-URL erhalten
+                image_url = urljoin(url, image['src'])
+                # Das Bild herunterladen
+                filename = self._download_image(image_url, folder_name)
+                files.append(folder_name + "/" + filename)
+                
+        info_msg = "„Ein intuitiver Held“\\-Event* Zeitraum: 02\\.05\\. 10 Uhr \\- 08\\.05\\. 20 Uhr"
+        result = self._api.send_media_group(523657502, info_msg, "MarkdownV2", files)
+    
+    def _download_image(image_url, output_folder):
+        # Bild-URL abrufen und Bytes laden
+        response = requests.get(image_url)
+        # Dateiname aus der URL extrahieren
+        filename = os.path.basename(urlparse(image_url).path)
+        # Dateipfad erstellen
+        filepath = os.path.join(output_folder, filename)
+        # Bild in die Datei speichern
+        with open(filepath, 'wb') as f:
+            f.write(response.content)
+        
+        log.info(f"Das Bild {filename} wurde heruntergeladen und im Ordner {output_folder} gespeichert.")
+        return filename
 
+    
     def _send_dc_info_questreset(self, event_name, event_change_str):
         if self.__dc_info_enable:
             embedUsername = self.__dc_webook_username
@@ -410,12 +457,14 @@ class EventManager():
                     if event.check_event_start(self._last_quest_reset_check, now):
                         log.info(f'EventManager: event start detected for event {event.name} ({event.etype}) -> reset quests')
                         # remove all quests from MAD DB
-                        self._scannerconnector.reset_all_quests()
-                        is_request_timewindow = self._is_inside_request_timewindow()
-                        if is_request_timewindow:
-                            self._scannerconnector.trigger_rescan()
+                        #self._scannerconnector.reset_all_quests()
+                        #is_request_timewindow = self._is_inside_request_timewindow()
+                        #if is_request_timewindow:
+                        #    self._scannerconnector.trigger_rescan()
                         self._send_tg_info_questreset(event.name, "start", is_request_timewindow)
                         self._send_dc_info_questreset(event.name, "start",)
+                        
+                        self._send_tg_event_info(event)
                         break
                 # event end during last check?
                 if "end" in self.__quests_reset_types.get(event.etype, []):

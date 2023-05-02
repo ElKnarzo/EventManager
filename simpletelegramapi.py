@@ -43,6 +43,38 @@ class SimpleTelegramApi:
         response = self._send_request("sendMessage?text={}&chat_id={}&parse_mode={}".format(text, chat_id, parse_mode))
         response = json.loads(response)
         return response
+        
+    def send_media_group(self, chat_id, text, parse_mode="HTML", files = []):
+        text = urllib.parse.quote_plus(text)
+        
+        media = []
+        i = 0
+        for file in files:
+            media_item = {
+                "type": "photo",
+                "media": "attach://file" + i
+            }
+            
+            if i = 0:
+                media_item["caption"] = text
+                media_item["parse_mode"] = parse_mode
+                
+            media.append(media_item)
+        
+        
+        body = {}
+        if len(media) > 0:
+            body["media"] = json.dumps(media)
+            
+        
+        i = 0
+        for file in files:
+            body["file" + i] = file
+        
+        request_url = self._base_url + command
+        response = requests.post(request_url, body)
+        return response
+        
 
     def edit_message(self, chat_id, message_id, text, parse_mode="HTML"):
         text = urllib.parse.quote_plus(text)
