@@ -117,7 +117,6 @@ class PoGoEvent():
             return None
 
     def check_event_start(self, timewindow_start, timewindow_end):
-        return True
         #handle unknown start
         if self.start is None:
             return False
