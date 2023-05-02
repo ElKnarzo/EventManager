@@ -45,7 +45,7 @@ class SimpleTelegramApi:
         return response
         
     def send_media_group(self, chat_id, text, parse_mode="HTML", files = []):
-        text = urllib.parse.quote_plus(text)
+        # text = urllib.parse.quote_plus(text)
         
         media = []
         i = 0
@@ -56,7 +56,7 @@ class SimpleTelegramApi:
             }
             
             if i == 0:
-                media_item["caption"] = ":caption"
+                media_item["caption"] = text
                 media_item["parse_mode"] = parse_mode
                 
             media.append(media_item)
@@ -66,9 +66,6 @@ class SimpleTelegramApi:
         body = {"chat_id": chat_id}
         if len(media) > 0:
             body["media"] = json.dumps(media)
-        
-        
-        body["media"] = body["media"].replace(":caption", caption)
         
         log.info(f"{body}")
         
