@@ -76,8 +76,8 @@ class SimpleTelegramApi:
         
         request_url = self._base_url + "sendMediaGroup"
         response = requests.post(request_url, data=body, files=postfiles)
-        response = json.loads(response)
-        return response
+        decoded_response = response.content.decode("utf8")
+        return json.loads(decoded_response)
         
 
     def edit_message(self, chat_id, message_id, text, parse_mode="HTML"):
